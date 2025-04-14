@@ -8,6 +8,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true;
 });
 
+//TODO: Dark And Light Themes
+//TODO: Video Support?
+//TODO: Repost Support?
+//TODO: Host the server, and publish to google chrome store
+//TODO: Improve Speeds -> Background Processing?
+//TODO: Only add options to fact-checkable tweets
+//TODO: Fact Check Caching?
+//TODO: Better Prompts?
+//TODO: Film Demo
+//TODO: Improved UI
+
 function addButtonsToTweets() {
   const style = document.createElement('style');
   style.textContent = `
@@ -31,10 +42,9 @@ function addButtonsToTweets() {
     .fact-check-container {
       margin: 10px 0;
       padding: 16px;
-      border-radius: 8px;
-      background-color: #f8f9fa;
-      border-left: 4px solid #1DA1F2;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      background-color:rgb(0, 0, 0);
+      border: 1px solid #2f3336;;
       display: none;
       animation: slideDown 0.3s ease-out;
     }
@@ -48,30 +58,33 @@ function addButtonsToTweets() {
     }
     .fact-check-header h3 {
       margin: 0;
-      color: #1DA1F2;
+      color: #b2b1ff;
       font-size: 16px;
       font-weight: bold;
     }
     .fact-check-content {
       line-height: 1.5;
-      color: #222;
+      color: rgb(239, 239, 239);
     }
     .fact-check-loading {
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 15px;
-      color: #555;
+      color: rgb(239, 239, 239);
     }
-    .fact-check-loading:after {
+    .fact-check-loading::after {
       content: "";
+      display: inline-block;
       width: 20px;
       height: 20px;
-      border: 2px solid #1DA1F2;
+      border: 3px solid #b2b1ff;
+      border-top: 3px solid transparent;
       border-radius: 50%;
-      border-top-color: transparent;
       margin-left: 10px;
       animation: spin 1s linear infinite;
+      box-sizing: border-box;
+}
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
@@ -151,9 +164,10 @@ function addButtonsToTweets() {
             const factCheckResult = await sendToServerAndWait(formattedTweet);
 
             const formattedResult = factCheckResult
-            .replace(/(Claim:)/g, '<strong>$1</strong>')
-            .replace(/(Verdict:)/g, '<br><strong>$1</strong>')
-            .replace(/(Reason:)/g, '<br><strong>$1</strong>');
+            .replace(/(Claim:)/g, '<strong><span style="color: #b2b1ff;">$1</span></strong>') 
+            .replace(/(Verdict:)/g, '<br><strong><span style="color: #b2b1ff;">$1</span></strong>')  
+            .replace(/(Reason:)/g, '<br><strong><span style="color: #b2b1ff;">$1</span></strong>')  
+
 
             const resultElement = document.createElement('div');
             resultElement.className = 'fact-check-result';
