@@ -12,10 +12,12 @@ function addButtonsToTweets() {
   const style = document.createElement('style');
   style.textContent = `
     .tweet-extract-btn {
-      background-color: #1DA1F2;
+      background-color: transparent;
       color: white;
       border: none;
-      border-radius: 4px;
+      width: 40px;               
+      height: 40px;
+      border-radius: 50%;
       padding: 4px 8px;
       font-size: 12px;
       cursor: pointer;
@@ -23,7 +25,8 @@ function addButtonsToTweets() {
       margin-bottom: 5px;
     }
     .tweet-extract-btn:hover {
-      background-color: #0c85d0;
+      background-color: rgba(13, 23, 32, 255)
+      
     }
     .fact-check-container {
       margin: 10px 0;
@@ -91,7 +94,13 @@ function addButtonsToTweets() {
 
     const button = document.createElement('button');
     button.className = 'tweet-extract-btn';
-    button.textContent = 'Fact Check';
+
+    const logo = document.createElement('img');
+    logo.src = chrome.runtime.getURL('icons/icon48.png'); 
+    logo.style.height = '23px'; 
+    logo.style.width = 'auto';
+
+    button.appendChild(logo);
 
     const factCheckContainer = document.createElement('div');
     factCheckContainer.className = 'fact-check-container';
@@ -106,6 +115,7 @@ function addButtonsToTweets() {
       event.stopPropagation();
 
       let tweetText = '';
+      let tweetImageUrl = '';
 
       const usernameElement = tweetElement.querySelector('[data-testid="User-Name"]');
       let username = 'Unknown User';
@@ -118,7 +128,17 @@ function addButtonsToTweets() {
         tweetText = tweetTextElement.innerText.trim();
       }
 
-      const formattedTweet = `${username}: ${tweetText}`;
+      console.log(tweetText)
+      
+      const imageElement = tweetElement.querySelector('img[src*="twimg.com/media"], img[src*="pbs.twimg.com/media"], img[src*="abs.twimg.com/media"]');
+      if (imageElement) {
+        tweetImageUrl = imageElement.getAttribute('src');
+      }
+
+      console.log(tweetImageUrl)
+
+      const formattedTweet = `${username}: ${tweetText} | ${tweetImageUrl}`;
+
       const isHidden = factCheckContainer.style.display === 'none' || !factCheckContainer.style.display;
 
       if (isHidden) {
@@ -130,13 +150,18 @@ function addButtonsToTweets() {
           try {
             const factCheckResult = await sendToServerAndWait(formattedTweet);
 
+            const formattedResult = factCheckResult
+            .replace(/(Claim:)/g, '<strong>$1</strong>')
+            .replace(/(Verdict:)/g, '<br><strong>$1</strong>')
+            .replace(/(Reason:)/g, '<br><strong>$1</strong>');
+
             const resultElement = document.createElement('div');
             resultElement.className = 'fact-check-result';
             resultElement.innerHTML = `
               <div class="fact-check-header">
                 <h3>Fact Check</h3>
               </div>
-              <div class="fact-check-content">${factCheckResult}</div>
+              <div class="fact-check-content">${formattedResult}</div>
             `;
 
             loadingIndicator.style.display = 'none';
@@ -181,13 +206,46 @@ function addButtonsToTweets() {
 }
 
 function sendToServerAndWait(data) {
-  return new Promise((resolve, reject) => {
+  let dataParts = data.split("|")
+  if (dataParts[1] === undefined || dataParts[1] === "" || dataParts[1] === " ") {
+    return new Promise((resolve, reject) => {
+      fetch('http://127.0.0.1:5000/api/endpoint', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        
+        body: JSON.stringify({ 
+          text: dataParts[0].trim(),
+          imageUrl: "No Image"
+         })
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(result => {
+          resolve(result.fact_check || "No fact check information available");
+        })
+        .catch(error => {``
+          reject(error);
+        });
+    });
+  }
+  else {
+    return new Promise((resolve, reject) => {
     fetch('http://127.0.0.1:5000/api/endpoint', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ text: data })
+      
+      body: JSON.stringify({ 
+        text: dataParts[0].trim(),
+        imageUrl: dataParts[1].trim()
+       })
     })
       .then(response => {
         if (!response.ok) {
@@ -198,10 +256,11 @@ function sendToServerAndWait(data) {
       .then(result => {
         resolve(result.fact_check || "No fact check information available");
       })
-      .catch(error => {
+      .catch(error => {``
         reject(error);
       });
-  });
+    });
+  }
 }
 
 addButtonsToTweets();
