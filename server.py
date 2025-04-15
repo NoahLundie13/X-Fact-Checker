@@ -31,12 +31,13 @@ def fact_check():
                         "role": "system", "content": 
                             """
                             Analyze the tweet as a political claim.
-                            1. Identify the main claim or implication.
+                            1. Using the most up to date info, as of right now, Identify the main claim or implication.
                             2. Fact-check the claim using well-known, public knowledge.
                             3. Classify it as one of the following:
                             - True
                             - False
-                            - Opinion/Unverifiable
+                            - Opinion
+                            - Unverifiable
                             4. Provide a concise explanation (1-2 sentences).
                             Respond in this format:
                             Claim: [summary of tweet]
@@ -55,7 +56,6 @@ def fact_check():
             )
 
             fact_check_result = response.output_text.strip()
-            print(f"fact_check_result: {fact_check_result}")
 
             if not fact_check_result:
                 return jsonify({'error': 'No response from OpenAI'}), 500
@@ -68,7 +68,7 @@ def fact_check():
     else:      
         try: 
             response = client.responses.create(
-                model="gpt-4o",
+                model="gpt-4.1",
                 input=[
                     {
                         "role": "system", "content": 
@@ -79,7 +79,8 @@ def fact_check():
                             3. Classify it as one of the following:
                             - True
                             - False
-                            - Opinion/Unverifiable
+                            - Opinion
+                            - Unverifiable
                             4. Provide a concise explanation (1-2 sentences).
                             Respond in this format:
                             Claim: [summary of combined tweet + image claim]
