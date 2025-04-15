@@ -19,11 +19,8 @@ chrome.action.onClicked.addListener((tab) => {
   }
 });
 
-// Listen for messages from content script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "displayFactCheck") {
-    // This function is not needed anymore as we're displaying fact checks 
-    // directly in the tweet, but keeping it for potential future use
     console.log("Fact check received:", message.text);
   }
   return true;
