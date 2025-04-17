@@ -8,16 +8,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return true;
 });
 
-//TODO: Dark And Light Themes
 //TODO: Video Support?
-//TODO: Repost Support?
 //TODO: Host the server, and publish to google chrome store
 //TODO: Improve Speeds -> Background Processing?
 //TODO: Only add options to fact-checkable tweets
-//TODO: Fact Check Caching?
-//TODO: Better Prompts?
 //TODO: Film Demo
-//TODO: Improved UI
+//TODO: Heuristic + mini ml model
 
 function addButtonsToTweets() {
   const style = document.createElement('style');
@@ -102,6 +98,16 @@ function addButtonsToTweets() {
 
   tweetElements.forEach((tweetElement) => {
     if (tweetElement.querySelector('.tweet-extract-btn')) {
+      return;
+    }
+
+    let tweet_check_text = "";
+    const tweetTextCheckElement = tweetElement.querySelector('[data-testid="tweetText"]');
+    if (tweetTextCheckElement) {
+      tweet_check_text = tweetTextCheckElement.innerText.trim();
+    }
+
+    if (!check_for_claim(tweet_check_text)) {
       return;
     }
 
@@ -275,6 +281,23 @@ function sendToServerAndWait(data) {
       });
     });
   }
+}
+
+function check_for_claim(tweetText) {
+  const claimIndicators = [
+    /\b(is|are|was|were|has|have|had|will|can|could|should|must|may|might|did|does|do)\b/,
+
+    /\b(according to|research|study|data|report|claims?|says)\b/,
+
+    /\b(true|false|real|fake|fact|hoax|myth)\b/,
+
+    /\d{1,3}%/,   
+    /\d{4}/,      
+    /\$\d+/,
+  ]
+
+  return claimIndicators.some(pattern => pattern.test(tweetText.toLowerCase()))
+
 }
 
 addButtonsToTweets();
