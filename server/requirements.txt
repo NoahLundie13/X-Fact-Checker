@@ -2,3 +2,4 @@ flask
 flask-cors
 openai
 load_dotenv
+gunicorn
