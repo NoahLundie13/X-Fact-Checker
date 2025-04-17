@@ -11,9 +11,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 //TODO: Video Support?
 //TODO: Host the server, and publish to google chrome store
 //TODO: Improve Speeds -> Background Processing?
-//TODO: Only add options to fact-checkable tweets
 //TODO: Film Demo
-//TODO: Heuristic + mini ml model
+//TODO: mini ml model for claim detection
+//TODO: Add fact check button if image but no text
+//TODO: Secure server with request origin specification
 
 function addButtonsToTweets() {
   const style = document.createElement('style');
@@ -229,6 +230,7 @@ function sendToServerAndWait(data) {
   let dataParts = data.split("|")
   if (dataParts[1] === undefined || dataParts[1] === "" || dataParts[1] === " ") {
     return new Promise((resolve, reject) => {
+      console.log("Sending to server: ", dataParts[0].trim())
       fetch('http://127.0.0.1:5000/api/endpoint', {
         method: 'POST',
         headers: {
@@ -287,7 +289,7 @@ function check_for_claim(tweetText) {
   const claimIndicators = [
     /\b(is|are|was|were|has|have|had|will|can|could|should|must|may|might|did|does|do)\b/,
 
-    /\b(according to|research|study|data|report|claims?|says)\b/,
+    /\b(according to|research|study|data|report|claims?|says|news|just in)\b/,
 
     /\b(true|false|real|fake|fact|hoax|myth)\b/,
 
