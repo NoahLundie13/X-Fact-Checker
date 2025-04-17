@@ -6,7 +6,12 @@ import os
 
 load_dotenv()
 
+ALLOWED_ORIGINS = [
+    "chrome-extension://ibphbngjmkcanmmfmfhcjkgiklgbfgee"
+]
+
 app = Flask(__name__)
+#CORS(app, resources={r"/api/*": {"origins": ALLOWED_ORIGINS}}, supports_credentials=True)
 CORS(app)
 
 client = OpenAI(

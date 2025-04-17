@@ -251,7 +251,7 @@ function sendToServerAndWait(data) {
         .then(result => {
           resolve(result.fact_check || "No fact check information available");
         })
-        .catch(error => {``
+        .catch(error => {
           reject(error);
         });
     });
