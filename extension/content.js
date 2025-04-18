@@ -231,7 +231,7 @@ function sendToServerAndWait(data) {
   if (dataParts[1] === undefined || dataParts[1] === "" || dataParts[1] === " ") {
     return new Promise((resolve, reject) => {
       console.log("Sending to server: ", dataParts[0].trim())
-      fetch('http://127.0.0.1:5000/api/endpoint', {
+      fetch('https://x-fact-checker.onrender.com/api/endpoint', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -258,7 +258,7 @@ function sendToServerAndWait(data) {
   }
   else {
     return new Promise((resolve, reject) => {
-    fetch('http://127.0.0.1:5000/api/endpoint', {
+    fetch('https://x-fact-checker.onrender.com/api/endpoint', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
