@@ -1,40 +1,43 @@
-from flask import Flask, request, jsonify
+import os
+
+from dotenv import load_dotenv
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from openai import OpenAI
-from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
-ALLOWED_ORIGINS = [
-    "chrome-extension://ibphbngjmkcanmmfmfhcjkgiklgbfgee"
-]
+ALLOWED_ORIGINS = ["chrome-extension://ibphbngjmkcanmmfmfhcjkgiklgbfgee"]
 
 app = Flask(__name__)
-#CORS(app, resources={r"/api/*": {"origins": ALLOWED_ORIGINS}}, supports_credentials=True)
+# CORS(app, resources={r"/api/*": {"origins": ALLOWED_ORIGINS}}, supports_credentials=True)
 CORS(app)
 
 client = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY"),
 )
 
-@app.route('/api/endpoint', methods=['POST'])
+
+@app.route("/api/endpoint", methods=["POST"])
 def fact_check():
     data = request.json
-    tweet_text = data.get('text')
-    tweet_url = data.get('imageUrl')
+    tweet_text = data.get("text") if data and isinstance(data, dict) else None
+    tweet_url = data.get("imageUrl") if data and isinstance(data, dict) else None
 
     if not tweet_text:
-        return jsonify({'error': 'No text provided'}), 400
-    
+        return jsonify({"error": "No text provided"}), 400
+
+    if not tweet_url:
+        return jsonify({"error": "No image provided"}), 400
+
     if tweet_url.strip() == "No Image":
-        try: 
+        try:
             response = client.responses.create(
                 model="gpt-4.1",
                 input=[
                     {
-                        "role": "system", "content": 
-                            """
+                        "role": "system",
+                        "content": """
                             Analyze the tweet as a political claim.
                             1. Using the most up to date info, as of april 16, 2025, Identify the main claim or implication.
                             2. Fact-check the claim using well-known, public knowledge.
@@ -48,74 +51,67 @@ def fact_check():
                             Claim: [summary of tweet]
                             Verdict: [True / False / Opinion / Unverifiable]
                             Reason: [brief explanation]
-                            """     
+                            """,
                     },
                     {
                         "role": "user",
                         "content": [
                             {"type": "input_text", "text": tweet_text},
-                        ]
-                        
-                    }
-                ]
+                        ],
+                    },
+                ],
             )
 
             fact_check_result = response.output_text.strip()
 
             if not fact_check_result:
-                return jsonify({'error': 'No response from OpenAI'}), 500
-            
-            return jsonify({'fact_check': fact_check_result}), 200
+                return jsonify({"error": "No response from OpenAI"}), 500
 
-        
+            return jsonify({"fact_check": fact_check_result}), 200
+
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
-    else:      
-        try: 
+            return jsonify({"error": str(e)}), 500
+    else:
+        try:
             response = client.responses.create(
                 model="gpt-4.1",
                 input=[
                     {
-                        "role": "system", "content": 
-                            """
-                            Analyze the tweet and image together as one combined political claim.
-                            1. Using the most up to date info, as of april 16, 2025, identify the main claim or implication.
-                            2. Fact-check the claim using well-known, public knowledge.
-                            3. Classify it as one of the following:
-                            - True
-                            - False
-                            - Opinion
-                            - Unverifiable
-                            4. Provide a concise explanation (1-2 sentences).
-                            Respond in this format:
-                            Claim: [summary of combined tweet + image claim]
-                            Verdict: [True / False / Opinion / Unverifiable]
-                            Reason: [brief explanation]
-                            """     
+                        "role": "system",
+                        "content": """
+                             Analyze the tweet and image together as one combined political claim.
+                                1. Using the most up-to-date info, as of April 24, 2025, identify the main claim or implication.
+                                2. Fact-check the claim using well-known, public knowledge.
+                                3. Classify it as one of the following:
+                                  - True
+                                 - False
+                                 - Opinion
+                                 - Unverifiable
+                                4. Provide a concise explanation (1-2 sentences).
+                                Respond in this format:
+                                Claim: [summary of combined tweet + image claim]
+                                Verdict: [True / False / Opinion / Unverifiable]
+                             Reason: [brief explanation]
+                        """,
                     },
                     {
                         "role": "user",
-                        "content": [
-                            {"type": "input_text", "text": tweet_text},
-                            {"type": "input_image", "image_url": tweet_url}
-                        ]
-                        
-                    }
-                ]
+                        "content": f"Tweet: {tweet_text}\nImage URL: {tweet_url}",
+                    },
+                ],
             )
 
             fact_check_result = response.output_text.strip()
             print(f"fact_check_result: {fact_check_result}")
 
             if not fact_check_result:
-                return jsonify({'error': 'No response from OpenAI'}), 500
-            
-            return jsonify({'fact_check': fact_check_result}), 200
+                return jsonify({"error": "No response from OpenAI"}), 500
 
-        
+            return jsonify({"fact_check": fact_check_result}), 200
+
         except Exception as e:
-            return jsonify({'error': str(e)}), 500
-    
-if __name__ == '__main__':
+            return jsonify({"error": str(e)}), 500
+
+
+if __name__ == "__main__":
     app.run()
-    
