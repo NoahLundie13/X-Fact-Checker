@@ -3,32 +3,21 @@
   "name": "Tweet Fact Checker",
   "version": "1.0",
   "description": "Adds fact-checking capability to tweets",
-  "permissions": [
-    "activeTab"
-  ],
-  "host_permissions": [
-    "https://twitter.com/*",
-    "https://x.com/*"
-  ],
+  "host_permissions": ["https://twitter.com/*", "https://x.com/*"],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://twitter.com/*",
-        "https://x.com/*"
-      ],
-      "js": [
-        "content.js"
-      ]
+      "matches": ["https://twitter.com/*", "https://x.com/*"],
+      "js": ["content.js"]
     }
   ],
   "web_accessible_resources": [
-  {
-    "resources": ["icons/icon48.png"],
-    "matches": ["<all_urls>"]
-  }
+    {
+      "resources": ["icons/icon48.png"],
+      "matches": ["<all_urls>"]
+    }
   ],
   "action": {
     "default_icon": {

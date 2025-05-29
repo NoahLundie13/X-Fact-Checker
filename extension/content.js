@@ -17,7 +17,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 //TODO: Secure server with request origin specification
 
 function addButtonsToTweets() {
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.textContent = `
     .tweet-extract-btn {
       background-color: transparent;
@@ -94,16 +94,18 @@ function addButtonsToTweets() {
   `;
   document.head.appendChild(style);
 
-  const tweetElements = document.querySelectorAll('article');
+  const tweetElements = document.querySelectorAll("article");
   let buttonsAdded = 0;
 
   tweetElements.forEach((tweetElement) => {
-    if (tweetElement.querySelector('.tweet-extract-btn')) {
+    if (tweetElement.querySelector(".tweet-extract-btn")) {
       return;
     }
 
     let tweet_check_text = "";
-    const tweetTextCheckElement = tweetElement.querySelector('[data-testid="tweetText"]');
+    const tweetTextCheckElement = tweetElement.querySelector(
+      '[data-testid="tweetText"]',
+    );
     if (tweetTextCheckElement) {
       tweet_check_text = tweetTextCheckElement.innerText.trim();
     }
@@ -112,72 +114,88 @@ function addButtonsToTweets() {
       return;
     }
 
-    const button = document.createElement('button');
-    button.className = 'tweet-extract-btn';
+    const button = document.createElement("button");
+    button.className = "tweet-extract-btn";
 
-    const logo = document.createElement('img');
-    logo.src = chrome.runtime.getURL('icons/icon48.png'); 
-    logo.style.height = '23px'; 
-    logo.style.width = 'auto';
+    const logo = document.createElement("img");
+    logo.src = chrome.runtime.getURL("icons/icon48.png");
+    logo.style.height = "23px";
+    logo.style.width = "auto";
 
     button.appendChild(logo);
 
-    const factCheckContainer = document.createElement('div');
-    factCheckContainer.className = 'fact-check-container';
+    const factCheckContainer = document.createElement("div");
+    factCheckContainer.className = "fact-check-container";
 
-    const loadingIndicator = document.createElement('div');
-    loadingIndicator.className = 'fact-check-loading';
-    loadingIndicator.textContent = 'Checking facts...';
+    const loadingIndicator = document.createElement("div");
+    loadingIndicator.className = "fact-check-loading";
+    loadingIndicator.textContent = "Checking facts...";
     factCheckContainer.appendChild(loadingIndicator);
 
-    button.addEventListener('click', async function (event) {
+    button.addEventListener("click", async function (event) {
       event.preventDefault();
       event.stopPropagation();
 
-      let tweetText = '';
-      let tweetImageUrl = '';
+      let tweetText = "";
+      let tweetImageUrl = "";
 
-      const usernameElement = tweetElement.querySelector('[data-testid="User-Name"]');
-      let username = 'Unknown User';
+      const usernameElement = tweetElement.querySelector(
+        '[data-testid="User-Name"]',
+      );
+      let username = "Unknown User";
       if (usernameElement) {
-        username = usernameElement.innerText.split('\n')[0];
+        username = usernameElement.innerText.split("\n")[0];
       }
 
-      const tweetTextElement = tweetElement.querySelector('[data-testid="tweetText"]');
+      const tweetTextElement = tweetElement.querySelector(
+        '[data-testid="tweetText"]',
+      );
       if (tweetTextElement) {
         tweetText = tweetTextElement.innerText.trim();
       }
 
-      console.log(tweetText)
-      
-      const imageElement = tweetElement.querySelector('img[src*="twimg.com/media"], img[src*="pbs.twimg.com/media"], img[src*="abs.twimg.com/media"]');
+      console.log(tweetText);
+
+      const imageElement = tweetElement.querySelector(
+        'img[src*="twimg.com/media"], img[src*="pbs.twimg.com/media"], img[src*="abs.twimg.com/media"]',
+      );
       if (imageElement) {
-        tweetImageUrl = imageElement.getAttribute('src');
+        tweetImageUrl = imageElement.getAttribute("src");
       }
 
-      console.log(tweetImageUrl)
+      console.log(tweetImageUrl);
 
       const formattedTweet = `${username}: ${tweetText} | ${tweetImageUrl}`;
 
-      const isHidden = factCheckContainer.style.display === 'none' || !factCheckContainer.style.display;
+      const isHidden =
+        factCheckContainer.style.display === "none" ||
+        !factCheckContainer.style.display;
 
       if (isHidden) {
-        factCheckContainer.style.display = 'block';
+        factCheckContainer.style.display = "block";
 
-        if (!factCheckContainer.querySelector('.fact-check-result')) {
-          loadingIndicator.style.display = 'block';
+        if (!factCheckContainer.querySelector(".fact-check-result")) {
+          loadingIndicator.style.display = "block";
 
           try {
             const factCheckResult = await sendToServerAndWait(formattedTweet);
 
             const formattedResult = factCheckResult
-            .replace(/(Claim:)/g, '<strong><span style="color: #b2b1ff;">$1</span></strong>') 
-            .replace(/(Verdict:)/g, '<br><strong><span style="color: #b2b1ff;">$1</span></strong>')  
-            .replace(/(Reason:)/g, '<br><strong><span style="color: #b2b1ff;">$1</span></strong>')  
+              .replace(
+                /(Claim:)/g,
+                '<strong><span style="color: #b2b1ff;">$1</span></strong>',
+              )
+              .replace(
+                /(Verdict:)/g,
+                '<br><strong><span style="color: #b2b1ff;">$1</span></strong>',
+              )
+              .replace(
+                /(Reason:)/g,
+                '<br><strong><span style="color: #b2b1ff;">$1</span></strong>',
+              );
 
-
-            const resultElement = document.createElement('div');
-            resultElement.className = 'fact-check-result';
+            const resultElement = document.createElement("div");
+            resultElement.className = "fact-check-result";
             resultElement.innerHTML = `
               <div class="fact-check-header">
                 <h3>Fact Check</h3>
@@ -185,10 +203,10 @@ function addButtonsToTweets() {
               <div class="fact-check-content">${formattedResult}</div>
             `;
 
-            loadingIndicator.style.display = 'none';
+            loadingIndicator.style.display = "none";
             factCheckContainer.appendChild(resultElement);
           } catch (error) {
-            loadingIndicator.style.display = 'none';
+            loadingIndicator.style.display = "none";
             factCheckContainer.innerHTML = `
               <div style="color: #e0245e; padding: 10px;">
                 Error fetching fact check: ${error.message}
@@ -197,23 +215,28 @@ function addButtonsToTweets() {
           }
         }
       } else {
-        factCheckContainer.style.display = 'none';
+        factCheckContainer.style.display = "none";
       }
     });
 
     const actionBar = tweetElement.querySelector('[role="group"]');
     if (actionBar) {
-      const buttonContainer = document.createElement('div');
-      buttonContainer.style.marginLeft = '10px';
+      const buttonContainer = document.createElement("div");
+      buttonContainer.style.marginLeft = "10px";
       buttonContainer.appendChild(button);
       actionBar.appendChild(buttonContainer);
       buttonsAdded++;
 
-      const tweetContent = tweetElement.querySelector('[data-testid="tweetText"]');
+      const tweetContent = tweetElement.querySelector(
+        '[data-testid="tweetText"]',
+      );
       if (tweetContent) {
-        const parentElement = tweetContent.closest('div[lang]');
+        const parentElement = tweetContent.closest("div[lang]");
         if (parentElement && parentElement.parentNode) {
-          parentElement.parentNode.insertBefore(factCheckContainer, parentElement.nextSibling);
+          parentElement.parentNode.insertBefore(
+            factCheckContainer,
+            parentElement.nextSibling,
+          );
         } else {
           tweetElement.appendChild(factCheckContainer);
         }
@@ -227,60 +250,64 @@ function addButtonsToTweets() {
 }
 
 function sendToServerAndWait(data) {
-  let dataParts = data.split("|")
-  if (dataParts[1] === undefined || dataParts[1] === "" || dataParts[1] === " ") {
+  let dataParts = data.split("|");
+  if (
+    dataParts[1] === undefined ||
+    dataParts[1] === "" ||
+    dataParts[1] === " "
+  ) {
     return new Promise((resolve, reject) => {
-      console.log("Sending to server: ", dataParts[0].trim())
-      fetch('https://x-fact-checker.onrender.com/api/endpoint', {
-        method: 'POST',
+      console.log("Sending to server: ", dataParts[0].trim());
+      fetch("https://x-fact-checker.onrender.com/api/endpoint", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        
-        body: JSON.stringify({ 
+
+        body: JSON.stringify({
           text: dataParts[0].trim(),
-          imageUrl: "No Image"
-         })
+          imageUrl: "No Image",
+        }),
       })
-        .then(response => {
+        .then((response) => {
           if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error("Network response was not ok");
           }
           return response.json();
         })
-        .then(result => {
+        .then((result) => {
           resolve(result.fact_check || "No fact check information available");
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });
-  }
-  else {
+  } else {
     return new Promise((resolve, reject) => {
-    fetch('https://x-fact-checker.onrender.com/api/endpoint', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      
-      body: JSON.stringify({ 
-        text: dataParts[0].trim(),
-        imageUrl: dataParts[1].trim()
-       })
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
+      fetch("https://x-fact-checker.onrender.com/api/endpoint", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          text: dataParts[0].trim(),
+          imageUrl: dataParts[1].trim(),
+        }),
       })
-      .then(result => {
-        resolve(result.fact_check || "No fact check information available");
-      })
-      .catch(error => {``
-        reject(error);
-      });
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((result) => {
+          resolve(result.fact_check || "No fact check information available");
+        })
+        .catch((error) => {
+          ``;
+          reject(error);
+        });
     });
   }
 }
@@ -293,13 +320,14 @@ function check_for_claim(tweetText) {
 
     /\b(true|false|real|fake|fact|hoax|myth)\b/,
 
-    /\d{1,3}%/,   
-    /\d{4}/,      
+    /\d{1,3}%/,
+    /\d{4}/,
     /\$\d+/,
-  ]
+  ];
 
-  return claimIndicators.some(pattern => pattern.test(tweetText.toLowerCase()))
-
+  return claimIndicators.some((pattern) =>
+    pattern.test(tweetText.toLowerCase()),
+  );
 }
 
 addButtonsToTweets();

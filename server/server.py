@@ -10,7 +10,6 @@ load_dotenv()
 ALLOWED_ORIGINS = ["chrome-extension://ibphbngjmkcanmmfmfhcjkgiklgbfgee"]
 
 app = Flask(__name__)
-# CORS(app, resources={r"/api/*": {"origins": ALLOWED_ORIGINS}}, supports_credentials=True)
 CORS(app)
 
 client = OpenAI(
@@ -39,7 +38,7 @@ def fact_check():
                         "role": "system",
                         "content": """
                             Analyze the tweet as a political claim.
-                            1. Using the most up to date info, as of april 16, 2025, Identify the main claim or implication.
+                            1. Using the most up to date info, as of The current date, Identify the main claim or implication.
                             2. Fact-check the claim using well-known, public knowledge.
                             3. Classify it as one of the following:
                             - True
