@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
@@ -29,6 +30,9 @@ def fact_check():
     if not tweet_url:
         return jsonify({"error": "No image provided"}), 400
 
+    current_time = datetime.now()
+    current_date = current_time.date()
+
     if tweet_url.strip() == "No Image":
         try:
             response = client.responses.create(
@@ -36,9 +40,9 @@ def fact_check():
                 input=[
                     {
                         "role": "system",
-                        "content": """
+                        "content": f"""
                             Analyze the tweet as a political claim.
-                            1. Search the web for the most recent information possible, and Identify the main claim or implication.
+                            1. Search the web for the most recent information possible, as of {current_date}, and Identify the main claim or implication.
                             2. Fact-check the claim using well-known, public knowledge.
                             3. Classify it as one of the following:
                             - True
