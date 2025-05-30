@@ -43,7 +43,7 @@ def fact_check():
                         "content": f"""
                             Analyze the tweet as a political claim.
                             1. Search the web for the most recent information possible, as of {current_date}, and Identify the main claim or implication.
-                            2. Fact-check the claim using well-known, public knowledge.
+                            2. Fact-check the claim using the well-known, public knowledge that you found in the first step.
                             3. Classify it as one of the following:
                             - True
                             - False
