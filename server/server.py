@@ -83,7 +83,7 @@ def fact_check():
                         "role": "system",
                         "content": """
                              Analyze the tweet and image together as one combined political claim.
-                                1. Using the most up-to-date info, as of April 24, 2025, identify the main claim or implication.
+                                1. Using the most up-to-date info, as of June 13, 2025, identify the main claim or implication.
                                 2. Fact-check the claim using well-known, public knowledge.
                                 3. Classify it as one of the following:
                                   - True
