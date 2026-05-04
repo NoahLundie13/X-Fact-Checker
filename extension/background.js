@@ -30,4 +30,4 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log("Fact check received:", message.text);
   }
   return true;
-});
+});             
