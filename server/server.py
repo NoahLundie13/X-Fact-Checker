@@ -61,7 +61,7 @@ def fact_check():
                     },
                     {"role": "user", "content": tweet_text},
                 ],
-                #tools=[{"type": "browser_search"}],
+                tools=[{"type": "browser_search"}]
             )
 
             fact_check_result = response.output_text.strip()
