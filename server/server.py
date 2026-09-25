@@ -15,7 +15,10 @@ CORS(app)
 
 client = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY"),
+    base_url="https://api.groq.com/openai/v1",
 )
+
+MODEL = "openai/gpt-oss-120b"
 
 
 @app.route("/api/endpoint", methods=["POST"])
@@ -36,13 +39,13 @@ def fact_check():
     if tweet_url.strip() == "No Image":
         try:
             response = client.responses.create(
-                model="gpt-4.1",
+                model=MODEL,
                 input=[
                     {
                         "role": "system",
                         "content": f"""
                             Analyze the tweet as a political claim.
-                            1. Search the web for the most recent information possible, as of June 14, 2025, and Identify the main claim or implication.
+                            1. Search the web for the most recent information possible, as of {current_date}, and Identify the main claim or implication.
                             2. Fact-check the claim using the well-known, public knowledge that you found in the first step.
                             3. Classify it as one of the following:
                             - True
@@ -56,13 +59,10 @@ def fact_check():
                             Reason: [brief explanation]
                             """,
                     },
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "input_text", "text": tweet_text},
-                        ],
-                    },
+                    {"role": "user", "content": tweet_text},
                 ],
+                #tools=[{"type": "browser_search"}],
+                reasoning_effort="medium",
             )
 
             fact_check_result = response.output_text.strip()
@@ -77,13 +77,13 @@ def fact_check():
     else:
         try:
             response = client.responses.create(
-                model="gpt-4.1",
+                model=MODEL,
                 input=[
                     {
                         "role": "system",
-                        "content": """
+                        "content": f"""
                              Analyze the tweet and image together as one combined political claim.
-                                1. Using the most up-to-date info, as of June 13, 2025, identify the main claim or implication.
+                                1. Using the most up-to-date info, as of {current_date}, identify the main claim or implication.
                                 2. Fact-check the claim using well-known, public knowledge.
                                 3. Classify it as one of the following:
                                   - True
@@ -102,6 +102,8 @@ def fact_check():
                         "content": f"Tweet: {tweet_text}\nImage URL: {tweet_url}",
                     },
                 ],
+                tools=[{"type": "browser_search"}],
+                reasoning_effort="medium",
             )
 
             fact_check_result = response.output_text.strip()
