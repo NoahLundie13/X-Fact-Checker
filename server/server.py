@@ -62,7 +62,6 @@ def fact_check():
                     {"role": "user", "content": tweet_text},
                 ],
                 #tools=[{"type": "browser_search"}],
-                reasoning_effort="medium",
             )
 
             fact_check_result = response.output_text.strip()
@@ -103,7 +102,6 @@ def fact_check():
                     },
                 ],
                 tools=[{"type": "browser_search"}],
-                reasoning_effort="medium",
             )
 
             fact_check_result = response.output_text.strip()
