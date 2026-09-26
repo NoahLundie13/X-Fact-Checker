@@ -81,7 +81,10 @@ function addButtonsToTweets() {
       margin-left: 10px;
       animation: spin 1s linear infinite;
       box-sizing: border-box;
-}
+    }
+    .loading-text {
+      position: relative;
+      top: -4px;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
@@ -129,7 +132,7 @@ function addButtonsToTweets() {
 
     const loadingIndicator = document.createElement("div");
     loadingIndicator.className = "fact-check-loading";
-    loadingIndicator.textContent = "Checking facts...";
+    loadingIndicator.innerHTML = `<span class="loading-text">Checking facts...</span>`;
     factCheckContainer.appendChild(loadingIndicator);
 
     button.addEventListener("click", async function (event) {

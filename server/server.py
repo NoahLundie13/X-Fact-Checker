@@ -23,8 +23,7 @@ client = OpenAI(
     base_url="https://api.groq.com/openai/v1",
 )
 
-# MODEL = "openai/gpt-oss-120b"
-MODEL = "groq/compound_mini"
+MODEL = "openai/gpt-oss-120b"
 
 
 @app.route("/api/endpoint", methods=["POST"])
@@ -32,8 +31,6 @@ def fact_check():
     data = request.json
     tweet_text = data.get("text") if data and isinstance(data, dict) else None
     tweet_url = data.get("imageUrl") if data and isinstance(data, dict) else None
-
-    time.sleep(5)
 
     if not tweet_text:
         return jsonify({"error": "No text provided"}), 400
@@ -43,6 +40,8 @@ def fact_check():
 
     current_time = datetime.now()
     current_date = current_time.date()
+
+    time.sleep(5)
 
     if tweet_url.strip() == "No Image":
         try:
@@ -65,6 +64,7 @@ def fact_check():
                             Claim: [summary of tweet]
                             Verdict: [True / False / Opinion / Unverifiable]
                             Reason: [brief explanation]
+                            Do not use Any Markdown In response
                             """,
                     },
                     {"role": "user", "content": tweet_text},
@@ -97,8 +97,9 @@ def fact_check():
                                  - False
                                  - Opinion
                                  - Unverifiable
-                                4. Provide a concise explanation (1-2 sentences).
+                                4. Provide a concise explanation (1-2 sentences). Do not use any MarkDown.
                                 Respond in this format:
+                                
                                 Claim: [summary of combined tweet + image claim]
                                 Verdict: [True / False / Opinion / Unverifiable]
                              Reason: [brief explanation]
