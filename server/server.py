@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-import time
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
@@ -40,8 +39,6 @@ def fact_check():
 
     current_time = datetime.now()
     current_date = current_time.date()
-
-    time.sleep(5)
 
     if tweet_url.strip() == "No Image":
         try:
