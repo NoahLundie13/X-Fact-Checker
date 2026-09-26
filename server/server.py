@@ -1,10 +1,15 @@
 import os
 from datetime import datetime
+import time
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from openai import OpenAI
+
+#TODO: Display Rate Limit Expired When Rate Limit runs out, rather than error
+#TODO: Fix Message Format
+#TODO: Fix Animation Spinner
 
 load_dotenv()
 
@@ -18,7 +23,8 @@ client = OpenAI(
     base_url="https://api.groq.com/openai/v1",
 )
 
-MODEL = "openai/gpt-oss-120b"
+# MODEL = "openai/gpt-oss-120b"
+MODEL = "groq/compound_mini"
 
 
 @app.route("/api/endpoint", methods=["POST"])
@@ -26,6 +32,8 @@ def fact_check():
     data = request.json
     tweet_text = data.get("text") if data and isinstance(data, dict) else None
     tweet_url = data.get("imageUrl") if data and isinstance(data, dict) else None
+
+    time.sleep(5)
 
     if not tweet_text:
         return jsonify({"error": "No text provided"}), 400
