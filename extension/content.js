@@ -19,6 +19,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 function addButtonsToTweets() {
   const style = document.createElement("style");
   style.textContent = `
+      @font-face {
+        font-family: "Chirp";
+        src: url("${chrome.runtime.getURL("fonts/Chirp_Font.ttf")}") format("truetype");
+        font-weight: 100 900;
+        font-style: normal;
+      }
+
+
     .tweet-extract-btn {
       background-color: transparent;
       color: white;
@@ -39,6 +47,7 @@ function addButtonsToTweets() {
     .fact-check-container {
       margin: 10px 0;
       padding: 16px;
+      font-family: "Chirp", sans-serif;
       border-radius: 10px;
       background-color:rgb(0, 0, 0);
       border: 1px solid #2f3336;;
@@ -190,11 +199,15 @@ function addButtonsToTweets() {
               )
               .replace(
                 /(Verdict:)/g,
-                '<br><strong><span style="color: #b2b1ff;">$1</span></strong>',
+                '<br><br><strong><span style="color: #b2b1ff;">$1</span></strong>',
               )
               .replace(
                 /(Reason:)/g,
-                '<br><strong><span style="color: #b2b1ff;">$1</span></strong>',
+                '<br><br><strong><span style="color: #b2b1ff;">$1</span></strong>',
+              )
+              .replace(
+                /(Source\(s\):)/g,
+                '<br><br><strong><span style="color: #b2b1ff;">$1</span></strong>',
               );
 
             const resultElement = document.createElement("div");

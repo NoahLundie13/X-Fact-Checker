@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Tweet Fact Checker",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Adds fact-checking capability to tweets",
   "host_permissions": ["https://twitter.com/*", "https://x.com/*"],
   "background": {
@@ -15,7 +15,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["icons/icon48.png"],
+      "resources": ["icons/icon48.png", "icons/Chirp_Font.ttf"],
       "matches": ["<all_urls>"]
     }
   ],
