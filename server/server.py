@@ -64,8 +64,9 @@ def fact_check():
                             Claim: [summary of tweet]
                             Verdict: [True / False / Opinion / Unverifiable]
                             Reason: [brief explanation]
+                            Source(s):
                             Do not use Any Markdown In response
-                            Sources should be listed in plain English
+                            Sources Should Be a link to the webpage, along with the date, and name of the news. Do not add ANY other forms of citation, including this format:【1†L39-L41】ANYWHERE
                             """,
                     },
                     {"role": "user", "content": tweet_text},
@@ -90,21 +91,23 @@ def fact_check():
                     {
                         "role": "system",
                         "content": f"""
-                             Analyze the tweet and image together as one combined political claim.
-                                1. Using the most up-to-date info, as of {current_date}, identify the main claim or implication.
-                                2. Fact-check the claim using well-known, public knowledge.
-                                3. Classify it as one of the following:
-                                  - True
-                                 - False
-                                 - Opinion
-                                 - Unverifiable
-                                4. Provide a concise explanation (1-2 sentences). Do not use any MarkDown. All sources should be written in plain english
-                                Respond in this format:
-                                
-                                Claim: [summary of combined tweet + image claim]
-                                Verdict: [True / False / Opinion / Unverifiable]
-                             Reason: [brief explanation]
-                        """,
+                            Analyze the tweet, and the contents of the image from the given link, as a political claim.
+                            1. Search the web for the most recent information possible, as of {current_date}, and Identify the main claim or implication.
+                            2. Fact-check the claim using the well-known, public knowledge that you found in the first step.
+                            3. Classify it as one of the following:
+                            - True
+                            - False
+                            - Opinion
+                            - Unverifiable
+                            4. Provide a concise explanation (1-2 sentences).
+                            Respond in this format:
+                            Claim: [summary of tweet]
+                            Verdict: [True / False / Opinion / Unverifiable]
+                            Reason: [brief explanation]
+                            Source(s):
+                            Do not use Any Markdown In response
+                            Sources Should Be a link to the webpage, along with the date, and name of the news. Do not add ANY other forms of citation, including this format:【1†L39-L41】ANYWHERE
+                            """,
                     },
                     {
                         "role": "user",
