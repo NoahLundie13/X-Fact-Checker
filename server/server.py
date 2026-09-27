@@ -9,6 +9,9 @@ from openai import OpenAI
 #TODO: Display Rate Limit Expired When Rate Limit runs out, rather than error
 #TODO: Fix Message Format
 #TODO: Fix Animation Spinner
+#TODO: Change Font to Chirp font
+#TODO: Re-film Video
+#TODO: Re-make Github
 
 load_dotenv()
 
@@ -62,6 +65,7 @@ def fact_check():
                             Verdict: [True / False / Opinion / Unverifiable]
                             Reason: [brief explanation]
                             Do not use Any Markdown In response
+                            Sources should be listed in plain English
                             """,
                     },
                     {"role": "user", "content": tweet_text},
@@ -94,7 +98,7 @@ def fact_check():
                                  - False
                                  - Opinion
                                  - Unverifiable
-                                4. Provide a concise explanation (1-2 sentences). Do not use any MarkDown.
+                                4. Provide a concise explanation (1-2 sentences). Do not use any MarkDown. All sources should be written in plain english
                                 Respond in this format:
                                 
                                 Claim: [summary of combined tweet + image claim]
